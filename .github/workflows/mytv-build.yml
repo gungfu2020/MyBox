@@ -37,10 +37,15 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
       - name: Prepare App
         run: |
-          mv ${{steps.sign_app.outputs.signedReleaseFile}} MyBox_$GITHUB_REF_NAME.apk
-      - name: Realese App
-        uses: ncipollo/release-action@v1
+          mv ${{steps.sign_app.outputs.signedReleaseFile}} MyBox.apk
+      - name: Upload App To Artifact
+        uses: actions/upload-artifact@v3
         with:
-          artifacts: "*.apk"
-          token: ${{ github.token }}
-          generateReleaseNotes: true
+          name: com.github.mybox.osc
+          path: MyBox.apk
+        #- name: Realese App
+        #uses: ncipollo/release-action@v1
+        #with:
+        #artifacts: "*.apk"
+        #token: ${{ github.token }}
+        #generateReleaseNotes: true
