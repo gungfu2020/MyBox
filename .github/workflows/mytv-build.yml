@@ -1,0 +1,46 @@
+name: MyTV Build
+
+on:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Modify Package Name
+        run: |
+          mv app/src/main/java/com/github/tvbox app/src/main/java/com/github/mybox 
+          find -type f -name "*gradle*" | xargs sed -i 's/com.github.tvbox/com.github.mybox/g'
+          find app/src/ -type f -name "*" | xargs sed -i 's/com.github.tvbox/com.github.mybox/g'
+          #chmod +x gradlew
+          #./gradlew assemblerelease --build-cache --parallel --daemon --warning-mode all
+      - name: Build With Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.5
+          arguments: assembleRelease --build-cache --parallel --daemon --warning-mode all
+      - name: Sign App
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release 
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - name: Prepare App
+        run: |
+          mv ${{steps.sign_app.outputs.signedReleaseFile}} MyBox_$GITHUB_REF_NAME.apk
+      - name: Realese App
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "*.apk"
+          token: ${{ github.token }}
+          generateReleaseNotes: true
