@@ -16,7 +16,8 @@ jobs:
           fetch-depth: 0
       - name: Modify Package Name
         run: |
-          mv app/src/main/java/com/github/tvbox app/src/main/java/com/github/mybox 
+          mv app/src/main/java/com/github/tvbox app/src/main/java/com/github/mybox
+          mv app_icon.png app/src/main/res/drawable/app_icon.png
           find -type f -name "*gradle*" | xargs sed -i 's/com.github.tvbox/com.github.mybox/g'
           find app/src/ -type f -name "*" | xargs sed -i 's/com.github.tvbox/com.github.mybox/g'
           find app/src/ -type f -name "*" | xargs sed -i 's/TVBox/MyBox/g'
