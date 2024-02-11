@@ -11,9 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: install android-sdk-build-tools
-        run: |
-          sudo apt-get update && sudo apt list android-sdk* && sudo apt-get install android-sdk-build-tools=29.0.3
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
